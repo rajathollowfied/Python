@@ -4,6 +4,7 @@ import logging
 import json, os, re, sys
 from typing import Callable,Optional
 from unicodedata import name
+from numpy import isin
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
 
@@ -19,9 +20,23 @@ logger = logging.getLogger('py4j')
 sys.path.insert(1, proj_dir)
 from classes import class_pyspark
 
-def main():
-    class_pyspark.Sparkclass({"first":"testing..."}).sparkStart()
+def main(proj_dir:str) -> None:
+    #calling function to open and read the file(s) and return contents as dict type
+    config = openFile(f"{proj_dir}/config_json/sales.json")
+    #starts the spark job
+    sparkStart(config)
+    
+def openFile(jsonFile:str) -> dict:
+    def openJson(jsonFile:str) -> dict:
+        if isinstance(jsonFile,str) and os.path.exists(jsonFile):
+            with open(jsonFile, "r") as f:
+                data = json.load(f)
+            return data
+    return (openJson(jsonFile))
+
+def sparkStart(config:dict) -> SparkSession:
+    if isinstance(config,dict):
+        class_pyspark.Sparkclass(strdict={}).sparkStart(config)
 
 if __name__ == '__main__':
-    main()
-
+    main(proj_dir)

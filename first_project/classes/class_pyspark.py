@@ -9,5 +9,5 @@ class Sparkclass:
     def __init__(self, strdict):
         self.strdict = strdict
     
-    def sparkStart(self):
-        print(self.strdict['first'])   
+    def sparkStart(self, kwargs:dict):
+        print(kwargs)
