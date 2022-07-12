@@ -1,10 +1,8 @@
 # importing modules
-from asyncio.log import logger
 import logging
 import json, os, re, sys
 from typing import Callable,Optional
-from unicodedata import name
-from numpy import isin
+from pyspark import SparkStageInfo
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
 
@@ -24,7 +22,9 @@ def main(proj_dir:str) -> None:
     #calling function to open and read the file(s) and return contents as dict type
     config = openFile(f"{proj_dir}/config_json/sales.json")
     #starts the spark job
-    sparkStart(config)
+    start = sparkStart(config)
+    #stop the spark job
+    sparkStop(start)
     
 def openFile(jsonFile:str) -> dict:
     def openJson(jsonFile:str) -> dict:
@@ -37,6 +37,10 @@ def openFile(jsonFile:str) -> dict:
 def sparkStart(config:dict) -> SparkSession:
     if isinstance(config,dict):
         class_pyspark.Sparkclass(strdict={}).sparkStart(config)
+       
+def sparkStop(spark:SparkSession) -> None:
+    if isinstance(spark,SparkSession):
+        spark.stop()    
 
 if __name__ == '__main__':
     main(proj_dir)
