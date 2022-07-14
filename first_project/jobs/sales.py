@@ -22,19 +22,19 @@ from classes import class_pyspark
 def main(proj_dir:str) -> None:
     
     #calling function to open and read the file(s) and return contents as dict type
-    jsonConfig = openFile(f"{proj_dir}/config_json/sales.json")
+    jsonConfig = openConfigFile(f"{proj_dir}/config_json/sales.json")
     
     #starts the spark job
     start = sparkStart(jsonConfig)
     
     #import json files from the specified directory
-    transactionsDf = importData(start, f"{proj_dir}/test_data/sales/transactions", ".json$")
+    transactionsDf = importData(start, f"{proj_dir}/test_data/sales/", ".json$")
     
 
     #stop the spark job
     sparkStop(start)
     
-def openFile(jsonFile:str) -> dict:
+def openConfigFile(jsonFile:str) -> dict:
     def openJson(jsonFile:str) -> dict:
         if isinstance(jsonFile,str) and os.path.exists(jsonFile):
             with open(jsonFile, "r") as f:

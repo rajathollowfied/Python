@@ -30,7 +30,6 @@ class Sparkclass:
             print(spark.sparkContext.getConf().getAll())
             
         spark = createSession(MASTER, APP_NAME)
-        #getSettings(spark)
 
         return spark
 
@@ -42,4 +41,39 @@ class Sparkclass:
                     return "dir"
                 elif os.path.isfile(datapath):
                     return "file"
-        pathType = fileOrDirectory(datapath)
+
+        def openDirectory(datapath:str):
+            if isinstance(datapath, str) and os.path.exists(datapath):
+                newlist = Sparkclass(self.strdict).listDirectory(datapath, pattern)
+                print(f"LIST -- {newlist}")
+        
+        def openFile(datapath:str):
+            if isinstance(datapath, str) and os.path.exists(datapath):
+                pass
+
+        pathtype = fileOrDirectory(datapath)
+        if pathtype == "dir":
+            openDirectory(datapath)
+        else:
+            None
+        
+    def listDirectory(self, directory:str, pattern:Optional[str]=None) -> list:
+
+        def recursiveFilelist(directory:str) -> list:
+            filelist = []
+            for dirpath, dirname, filenames in os.walk(directory):
+                for filename in filenames:
+                    filelist.append(f"{dirpath}/{filename}")
+            return filelist
+        
+        def filterFiles(filelist:list, pattern:str):
+            print ("im in filterfiles!!")
+            newfilelist = []
+            for contents in filelist:
+                if re.search(rf"{pattern}",contents):
+                    newfilelist.append(contents)
+            return newfilelist
+                    
+        filelist = recursiveFilelist(directory)
+
+        return filelist  if pattern == None else filterFiles(filelist, pattern) if pattern == "" else print ("ffs")
