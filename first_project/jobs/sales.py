@@ -28,7 +28,7 @@ def main(proj_dir:str) -> None:
     start = sparkStart(jsonConfig)
     
     #import json files from the specified directory
-    transactionsDf = importData(start, f"{proj_dir}/test_data/sales/", ".json$")
+    transactionsDf = importData(start, f"{proj_dir}/test_data/sales",".json$")
     
 
     #stop the spark job
@@ -37,8 +37,8 @@ def main(proj_dir:str) -> None:
 def openConfigFile(jsonFile:str) -> dict:
     def openJson(jsonFile:str) -> dict:
         if isinstance(jsonFile,str) and os.path.exists(jsonFile):
-            with open(jsonFile, "r") as f:
-                data = json.load(f)
+            with open(jsonFile, "r") as filedata:
+                data = json.load(filedata)
             return data
     return (openJson(jsonFile))
 
