@@ -28,11 +28,12 @@ def main(proj_dir:str) -> None:
     start = sparkStart(jsonConfig)
     
     #import json files from the specified directory
-    transactionsDf = importData(start, f"{proj_dir}/test_data/sales",".json$")
-    
+    #transactionsDf = importData(start, f"{proj_dir}/test_data/sales/transactions",".json$")
+    customerDf = importData(start, f"{proj_dir}/test_data/sales/customers.csv")
 
-    #stop the spark job
-    sparkStop(start)
+    transformData(start,customerDf)
+    
+    sparkStop(start)    #stop the spark job
     
 def openConfigFile(jsonFile:str) -> dict:
     def openJson(jsonFile:str) -> dict:
@@ -53,6 +54,10 @@ def sparkStop(start:SparkSession) -> None:
 def importData(start:SparkSession, datapath:str, pattern:Optional[str]=None) -> DataFrame:
     if isinstance(start, SparkSession):
         return class_pyspark.Sparkclass(strdict={}).importData(start, datapath, pattern)
+
+def transformData(start:SparkSession,customerDf:DataFrame) -> DataFrame:
+    print(customerDf)
+    
 
 if __name__ == '__main__':
     main(proj_dir)

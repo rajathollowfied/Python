@@ -1,6 +1,7 @@
 # importing modules
 import json, os, re, sys
 from typing import Callable,Optional
+from venv import create
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
@@ -39,18 +40,21 @@ class Sparkclass:
                 elif os.path.isfile(datapath):
                     return "file"
 
-        def openDirectory(getUniqueFileExtensions:Callable,datapath:str, pattern:Optional[str]=None) -> list:                            #opening the directory
+        def openDirectory(spark:SparkSession,getUniqueFileExtensions:Callable,datapath:str, pattern:Optional[str]=None) -> list:                            #opening the directory
             if isinstance(datapath, str) and os.path.exists(datapath):
                 filelist = Sparkclass(self.strdict).listDirectory(datapath, pattern)
                 filetype = getUniqueFileExtensions(filelist)
-                print(filetype)
+                if filetype:
+                   return Sparkclass(self.strdict).createDataFrame(spark, filelist, filetype)
         
-        def openFile(filepath:str):
+        def openFile(getFileExtension:callable,filepath:str):
             if isinstance(filepath, str) and os.path.exists(filepath):
                 filelist = [filepath]
+                filetype = getFileExtension(filepath)
+                df =  Sparkclass(self.strdict).createDataFrame(spark, filelist, filetype)
+                print(df)
 
-
-        def getUniqueFileExtensions(filelist:list) -> list:
+        def getUniqueFileExtensions(filelist:list) -> list:     # unique extentions in a path
             if isinstance(filelist, list) and len(filelist) > 0:
                 extts = list(set([os.path.splitext(f)[1] for f in filelist]))
                 return extts[0] if len(extts) == 1 else None
@@ -59,10 +63,20 @@ class Sparkclass:
         pathtype = fileOrDirectory(datapath)                       #str type dir/file
         
         if pathtype == "dir":
-            openDirectory(getUniqueFileExtensions,datapath,pattern)
+            print("DIRECTORY")
+            openDirectory(spark, getUniqueFileExtensions,datapath,pattern)
+        elif pathtype == "file":
+            print("FILE")
+            openFile(Sparkclass(self.strdict).getFileExtension, datapath)
         else:
             None
-        
+    
+    def getFileExtension(self, file:str) -> str: #file extension of a single file
+        if isinstance(file, str) and os.path.exists(file):
+            filename, file_extension = os.path.splitext(file)
+            return file_extension[1:] if file_extension else None
+
+
     def listDirectory(self, directory:str, pattern:Optional[str]=None) -> list:     #list contents in the directory
 
         def recursiveFilelist(directory:str) -> list:               #go through the contents of the directory recursively, return a list in the end
@@ -81,14 +95,20 @@ class Sparkclass:
                     
         filelist = recursiveFilelist(directory)
         
-
         return filelist  if pattern == None else filterFiles(filelist, pattern) if pattern == ".json$" else print ("ffs")
 
-def createDataFrame(self,spark:SparkSession,filelist:list,filetype:str) -> DataFrame:
-    
-    def dfFromCSV(filelist:list) -> DataFrame:
-        pass
+    def createDataFrame(self,spark:SparkSession,filelist:list,filetype:str) -> DataFrame:
+        
+        def dfFromCSV(filelist:list) -> DataFrame:
+            
+            if isinstance(filelist, list) and len(filelist) > 0:
+                df = spark.read.format("csv") \
+                    .option("header","true") \
+                    .option("mode", "DROPMALFORMED") \
+                    .load(filelist)
+                return df
 
+        def dfFromJSON(filelist:list) -> DataFrame:
+            pass
 
-    def dfFromJSON(filelist:list) -> DataFrame:
-        pass
+        return dfFromCSV(filelist) if filetype == "csv" else dfFromJSON(filelist) if filetype == "json" else None
