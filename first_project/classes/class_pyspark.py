@@ -40,34 +40,33 @@ class Sparkclass:
                 elif os.path.isfile(datapath):
                     return "file"
 
-        def openDirectory(spark:SparkSession,getUniqueFileExtensions:Callable,datapath:str, pattern:Optional[str]=None) -> list:                            #opening the directory
+        def openDirectory(spark:SparkSession,getUniqueFileExtensions:Callable,datapath:str, pattern:Optional[str]=None) -> DataFrame:                            #opening the directory
             if isinstance(datapath, str) and os.path.exists(datapath):
                 filelist = Sparkclass(self.strdict).listDirectory(datapath, pattern)
                 filetype = getUniqueFileExtensions(filelist)
                 if filetype:
-                   return Sparkclass(self.strdict).createDataFrame(spark, filelist, filetype)
+                    return Sparkclass(self.strdict).createDataFrame(spark, filelist, filetype)
         
         def openFile(getFileExtension:callable,filepath:str):
             if isinstance(filepath, str) and os.path.exists(filepath):
                 filelist = [filepath]
                 filetype = getFileExtension(filepath)
-                df =  Sparkclass(self.strdict).createDataFrame(spark, filelist, filetype)
-                print(df)
+                return Sparkclass(self.strdict).createDataFrame(spark, filelist, filetype)
 
         def getUniqueFileExtensions(filelist:list) -> list:     # unique extentions in a path
             if isinstance(filelist, list) and len(filelist) > 0:
                 extts = list(set([os.path.splitext(f)[1] for f in filelist]))
-                return extts[0] if len(extts) == 1 else None
+                return extts[0][1:] if len(extts) == 1 else None
 
 
         pathtype = fileOrDirectory(datapath)                       #str type dir/file
         
         if pathtype == "dir":
             print("DIRECTORY")
-            openDirectory(spark, getUniqueFileExtensions,datapath,pattern)
+            return openDirectory(spark, getUniqueFileExtensions,datapath,pattern)
         elif pathtype == "file":
             print("FILE")
-            openFile(Sparkclass(self.strdict).getFileExtension, datapath)
+            return openFile(Sparkclass(self.strdict).getFileExtension, datapath)
         else:
             None
     
@@ -106,9 +105,15 @@ class Sparkclass:
                     .option("header","true") \
                     .option("mode", "DROPMALFORMED") \
                     .load(filelist)
-                return df
+            return df              
 
         def dfFromJSON(filelist:list) -> DataFrame:
-            pass
-
+            
+            if isinstance(filelist, list) and len(filelist) > 0:
+                df = spark.read.format("json") \
+                    .option("mode","PERMISSIVE") \
+                    .option("primitiveAsString", "true") \
+                    .load(filelist)
+            return df
+        
         return dfFromCSV(filelist) if filetype == "csv" else dfFromJSON(filelist) if filetype == "json" else None

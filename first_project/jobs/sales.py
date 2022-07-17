@@ -28,10 +28,11 @@ def main(proj_dir:str) -> None:
     start = sparkStart(jsonConfig)
     
     #import json files from the specified directory
-    #transactionsDf = importData(start, f"{proj_dir}/test_data/sales/transactions",".json$")
+    transactionsDf = importData(start, f"{proj_dir}/test_data/sales/transactions",".json$")
     customerDf = importData(start, f"{proj_dir}/test_data/sales/customers.csv")
+    productsDf = importData(start, f"{proj_dir}/test_data/sales/products.csv")
 
-    transformData(start,customerDf)
+    transformData(start,transactionsDf,customerDf,productsDf)
     
     sparkStop(start)    #stop the spark job
     
@@ -55,9 +56,17 @@ def importData(start:SparkSession, datapath:str, pattern:Optional[str]=None) -> 
     if isinstance(start, SparkSession):
         return class_pyspark.Sparkclass(strdict={}).importData(start, datapath, pattern)
 
-def transformData(start:SparkSession,customerDf:DataFrame) -> DataFrame:
-    print(customerDf)
-    
+def showMySchema(df:DataFrame) -> None:
+    if isinstance(df, DataFrame):
+        df.show()
+        df.printSchema()
+        print("Total number of rows - ",df.count())
+
+def transformData(start:SparkSession,transactionsDf:DataFrame,customerDf:DataFrame,productsDf:DataFrame) -> DataFrame:
+    print(f"I AM TRANSFORMING --  \n{transactionsDf}\n SCHEMA --{showMySchema(transactionsDf)}")
+    print(f"\n{customerDf}\n SCHEMA --{showMySchema(customerDf)}")
+    print(f"\n{productsDf}\n SCHEMA --{showMySchema(productsDf)}")
+       
 
 if __name__ == '__main__':
     main(proj_dir)
