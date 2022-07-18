@@ -5,6 +5,7 @@ from venv import create
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
+from jobs import sales
 
 class Sparkclass:
 
@@ -30,6 +31,14 @@ class Sparkclass:
         spark = createSession(MASTER, APP_NAME) #Sparksession variable
 
         return spark
+        
+    
+    def openJson(self, filepath:str) -> dict:
+        if isinstance(filepath,str) and os.path.exists(filepath):
+            with open(filepath, "r") as filedata:
+                data = json.load(filedata)
+            return data
+        
 
     def importData(self, spark:SparkSession, datapath:str, pattern:Optional[str]=None) -> DataFrame:
         
@@ -40,7 +49,7 @@ class Sparkclass:
                 elif os.path.isfile(datapath):
                     return "file"
 
-        def openDirectory(spark:SparkSession,getUniqueFileExtensions:Callable,datapath:str, pattern:Optional[str]=None) -> DataFrame:                            #opening the directory
+        def openDirectory(spark:SparkSession,datapath:str, pattern:Optional[str]=None) -> DataFrame:                            #opening the directory
             if isinstance(datapath, str) and os.path.exists(datapath):
                 filelist = Sparkclass(self.strdict).listDirectory(datapath, pattern)
                 filetype = getUniqueFileExtensions(filelist)
@@ -63,7 +72,7 @@ class Sparkclass:
         
         if pathtype == "dir":
             print("DIRECTORY")
-            return openDirectory(spark, getUniqueFileExtensions,datapath,pattern)
+            return openDirectory(spark,datapath,pattern)
         elif pathtype == "file":
             print("FILE")
             return openFile(Sparkclass(self.strdict).getFileExtension, datapath)
@@ -87,14 +96,16 @@ class Sparkclass:
         
         def filterFiles(filelist:list, pattern:str):                #filtering contents in the directory and appending contents to the list in case pattern is matched
             newfilelist = []
-            for contents in filelist:
-                if re.search(rf"{pattern}",contents):
-                    newfilelist.append(contents)
-            return newfilelist
+            if isinstance(pattern,str):
+                for contents in filelist:
+                    if re.search(rf"{pattern}",contents):
+                        newfilelist.append(contents)
+                return newfilelist
+            else:
+                return filelist
                     
         filelist = recursiveFilelist(directory)
-        
-        return filelist  if pattern == None else filterFiles(filelist, pattern) if pattern == ".json$" else print ("ffs")
+        return filterFiles(filelist,pattern)               
 
     def createDataFrame(self,spark:SparkSession,filelist:list,filetype:str) -> DataFrame:
         
@@ -116,4 +127,19 @@ class Sparkclass:
                     .load(filelist)
             return df
         
-        return dfFromCSV(filelist) if filetype == "csv" else dfFromJSON(filelist) if filetype == "json" else None
+        def makeDf(filelist:list, filetype: str) -> DataFrame:
+            return dfFromCSV(filelist) if filetype == "csv" else dfFromJSON(filelist) if filetype == "json" else None
+        
+        return makeDf(filelist, filetype)
+
+    def debugDf(self, df:DataFrame, filename:str) -> None:
+        
+        def makeDirectory():
+            if not os.path.exists(f"{sales.proj_dir}/logs/"):
+                os.makedirs(f"{sales.proj_dir}/logs/")
+
+        def createFilepath(filename:str):
+            return f"{sales.proj_dir}/logs/{filename}.json"
+        
+        makeDirectory()
+        filepath = createFilepath(filename)

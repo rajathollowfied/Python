@@ -2,9 +2,9 @@
 import logging
 import json, os, re, sys
 from typing import Callable,Optional
-from pyspark import SparkStageInfo
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import col,explode
 
 
 # setting up environment variables and logger information
@@ -36,13 +36,9 @@ def main(proj_dir:str) -> None:
     
     sparkStop(start)    #stop the spark job
     
-def openConfigFile(jsonFile:str) -> dict:
-    def openJson(jsonFile:str) -> dict:
-        if isinstance(jsonFile,str) and os.path.exists(jsonFile):
-            with open(jsonFile, "r") as filedata:
-                data = json.load(filedata)
-            return data
-    return (openJson(jsonFile))
+def openConfigFile(filepath:str) -> dict:
+    if isinstance(filepath,str) and os.path.exists(filepath):
+        return class_pyspark.Sparkclass(strdict={}).openJson(filepath)
 
 def sparkStart(jsonConfig:dict) -> SparkSession:
     if isinstance(jsonConfig,dict):
@@ -56,17 +52,35 @@ def importData(start:SparkSession, datapath:str, pattern:Optional[str]=None) -> 
     if isinstance(start, SparkSession):
         return class_pyspark.Sparkclass(strdict={}).importData(start, datapath, pattern)
 
-def showMySchema(df:DataFrame) -> None:
+def showMySchema(df:DataFrame, filename:str) -> None:
     if isinstance(df, DataFrame):
-        df.show()
-        df.printSchema()
-        print("Total number of rows - ",df.count())
+        class_pyspark.Sparkclass(strdict={}).debugDf(df, filename)
 
 def transformData(start:SparkSession,transactionsDf:DataFrame,customerDf:DataFrame,productsDf:DataFrame) -> DataFrame:
-    print(f"I AM TRANSFORMING --  \n{transactionsDf}\n SCHEMA --{showMySchema(transactionsDf)}")
-    print(f"\n{customerDf}\n SCHEMA --{showMySchema(customerDf)}")
-    print(f"\n{productsDf}\n SCHEMA --{showMySchema(productsDf)}")
-       
+    #print(f"I AM TRANSFORMING --  \n{transactionsDf}\n SCHEMA --{showMySchema(transactionsDf)}")
+    #print(f"\n{customerDf}\n SCHEMA --{showMySchema(customerDf)}")
+    #print(f"\n{productsDf}\n SCHEMA --{showMySchema(productsDf)}")
+    tdf = cleanTransactions(transactionsDf)
+    cdf = cleanCustomers(customerDf)
+
+    showMySchema(tdf,"transactionsDf")
+    showMySchema(cdf,"customerDf")
+
+def cleanTransactions(df:DataFrame) -> DataFrame:
+    if isinstance(df, DataFrame):
+        df1 = df.withColumn("basket_explode", explode(col("basket"))).drop("basket")
+        df2 = df1.select(col("customer_id"), \
+                col("date_of_purchase"), \
+                col("basket_explode.*"))    \
+                    .withColumn("date", col("date_of_purchase").cast("Date"))   \
+                        .withColumn("price", col("price").cast("Integer"))
+        return df2
+
+def cleanCustomers(df:DataFrame) -> DataFrame:
+    if isinstance(df, DataFrame):
+        df1 = df.withColumn("loyalty_score", col("loyalty_score").cast("Integer"))
+        return df1
+
 
 if __name__ == '__main__':
     main(proj_dir)
