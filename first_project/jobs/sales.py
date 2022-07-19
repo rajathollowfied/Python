@@ -65,6 +65,7 @@ def transformData(start:SparkSession,transactionsDf:DataFrame,customerDf:DataFra
 
     showMySchema(tdf,"transactionsDf")
     showMySchema(cdf,"customerDf")
+    showMySchema(productsDf,"productsDf")
 
 def cleanTransactions(df:DataFrame) -> DataFrame:
     if isinstance(df, DataFrame):

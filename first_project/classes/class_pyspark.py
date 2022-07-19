@@ -1,6 +1,6 @@
 # importing modules
 import json, os, re, sys
-from typing import Callable,Optional
+from typing import Any, Callable,Optional
 from venv import create
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
@@ -42,12 +42,12 @@ class Sparkclass:
 
     def importData(self, spark:SparkSession, datapath:str, pattern:Optional[str]=None) -> DataFrame:
         
-        def fileOrDirectory(datapath:str) -> str:                       #determining whether it's a file or a directory
+        def fileOrDirectory(spark:SparkSession,datapath:str,pattern:Optional[str]=None) -> str:                       #determining whether it's a file or a directory
             if isinstance(datapath,str) and os.path.exists(datapath):
                 if os.path.isdir(datapath):
-                    return "dir"
+                    return openDirectory(spark,datapath,pattern)
                 elif os.path.isfile(datapath):
-                    return "file"
+                    return openFile(Sparkclass(self.strdict).getFileExtension, datapath)
 
         def openDirectory(spark:SparkSession,datapath:str, pattern:Optional[str]=None) -> DataFrame:                            #opening the directory
             if isinstance(datapath, str) and os.path.exists(datapath):
@@ -68,16 +68,7 @@ class Sparkclass:
                 return extts[0][1:] if len(extts) == 1 else None
 
 
-        pathtype = fileOrDirectory(datapath)                       #str type dir/file
-        
-        if pathtype == "dir":
-            print("DIRECTORY")
-            return openDirectory(spark,datapath,pattern)
-        elif pathtype == "file":
-            print("FILE")
-            return openFile(Sparkclass(self.strdict).getFileExtension, datapath)
-        else:
-            None
+        return fileOrDirectory(spark,datapath,pattern)                       
     
     def getFileExtension(self, file:str) -> str: #file extension of a single file
         if isinstance(file, str) and os.path.exists(file):
@@ -134,12 +125,28 @@ class Sparkclass:
 
     def debugDf(self, df:DataFrame, filename:str) -> None:
         
-        def makeDirectory():
+        def makeDirectory() -> None:
             if not os.path.exists(f"{sales.proj_dir}/logs/"):
                 os.makedirs(f"{sales.proj_dir}/logs/")
 
-        def createFilepath(filename:str):
+        def createFilepath(filename:str) -> str:
             return f"{sales.proj_dir}/logs/{filename}.json"
         
+        def dfToString(df:DataFrame) -> str:
+            return df._jdf.schema().treeString()
+
+        def createContent(df:DataFrame) -> dict:
+            content = {}
+            content['count'] = df.count()
+            content['schema'] = json.loads(df.schema.json())
+            return json.dumps(content, sort_keys=False, indent = 4, default = str)
+        
+        def createFile(filepath:str, content:Any) -> None:
+            with open(filepath, 'a') as f:
+                f.write("{}\n".format(content))
+            f.close()
+
         makeDirectory()
         filepath = createFilepath(filename)
+        #content_log = dfToString(df)
+        createFile(filepath,createContent(df))
