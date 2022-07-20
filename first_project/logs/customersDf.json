@@ -1,24 +1,18 @@
 {
-    "count": 64,
+    "count": 137,
     "schema": {
         "fields": [
             {
                 "metadata": {},
-                "name": "product_id",
+                "name": "customer_id",
                 "nullable": true,
                 "type": "string"
             },
             {
                 "metadata": {},
-                "name": "product_description",
+                "name": "loyalty_score",
                 "nullable": true,
-                "type": "string"
-            },
-            {
-                "metadata": {},
-                "name": "product_category",
-                "nullable": true,
-                "type": "string"
+                "type": "integer"
             }
         ],
         "type": "struct"

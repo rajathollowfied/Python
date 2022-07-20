@@ -1,6 +1,6 @@
 # importing modules
 import json, os, re, sys
-from typing import Any, Callable,Optional
+from typing import Any, Callable,Optional, Tuple
 from venv import create
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
@@ -47,7 +47,7 @@ class Sparkclass:
                 if os.path.isdir(datapath):
                     return openDirectory(spark,datapath,pattern)
                 elif os.path.isfile(datapath):
-                    return openFile(Sparkclass(self.strdict).getFileExtension, datapath)
+                    return openFile(spark, datapath)
 
         def openDirectory(spark:SparkSession,datapath:str, pattern:Optional[str]=None) -> DataFrame:                            #opening the directory
             if isinstance(datapath, str) and os.path.exists(datapath):
@@ -56,10 +56,10 @@ class Sparkclass:
                 if filetype:
                     return Sparkclass(self.strdict).createDataFrame(spark, filelist, filetype)
         
-        def openFile(getFileExtension:callable,filepath:str):
+        def openFile(spark:SparkSession,filepath:str):
             if isinstance(filepath, str) and os.path.exists(filepath):
                 filelist = [filepath]
-                filetype = getFileExtension(filepath)
+                filetype = Sparkclass(self.strdict).getFileExtension(filepath)
                 return Sparkclass(self.strdict).createDataFrame(spark, filelist, filetype)
 
         def getUniqueFileExtensions(filelist:list) -> list:     # unique extentions in a path
@@ -123,6 +123,10 @@ class Sparkclass:
         
         return makeDf(filelist, filetype)
 
+    def createTempTables(self,tupleDf:tuple):
+        print(tupleDf)
+        
+
     def debugDf(self, df:DataFrame, filename:str) -> None:
         
         def makeDirectory() -> None:
@@ -146,7 +150,12 @@ class Sparkclass:
                 f.write("{}\n".format(content))
             f.close()
 
+        def deleteFiles(filepath:str) -> None:
+            if os.path.exists(filepath):
+                os.remove(filepath)
+        
         makeDirectory()
         filepath = createFilepath(filename)
         #content_log = dfToString(df)
+        deleteFiles(filepath)
         createFile(filepath,createContent(df))

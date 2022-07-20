@@ -60,12 +60,8 @@ def transformData(start:SparkSession,transactionsDf:DataFrame,customerDf:DataFra
     #print(f"I AM TRANSFORMING --  \n{transactionsDf}\n SCHEMA --{showMySchema(transactionsDf)}")
     #print(f"\n{customerDf}\n SCHEMA --{showMySchema(customerDf)}")
     #print(f"\n{productsDf}\n SCHEMA --{showMySchema(productsDf)}")
-    tdf = cleanTransactions(transactionsDf)
-    cdf = cleanCustomers(customerDf)
-
-    showMySchema(tdf,"transactionsDf")
-    showMySchema(cdf,"customerDf")
-    showMySchema(productsDf,"productsDf")
+    createTables(start,[(cleanTransactions(transactionsDf),"transactions_table"),(cleanCustomers(customerDf),"customers_table"),(cleanProducts(productsDf),"products_table")])
+    
 
 def cleanTransactions(df:DataFrame) -> DataFrame:
     if isinstance(df, DataFrame):
@@ -75,13 +71,22 @@ def cleanTransactions(df:DataFrame) -> DataFrame:
                 col("basket_explode.*"))    \
                     .withColumn("date", col("date_of_purchase").cast("Date"))   \
                         .withColumn("price", col("price").cast("Integer"))
+        showMySchema(df2,"transactionsDf")
         return df2
 
 def cleanCustomers(df:DataFrame) -> DataFrame:
     if isinstance(df, DataFrame):
         df1 = df.withColumn("loyalty_score", col("loyalty_score").cast("Integer"))
+        showMySchema(df1,"customersDf")
         return df1
 
+def cleanProducts(df:DataFrame) -> DataFrame:
+    if isinstance(df, DataFrame):
+       showMySchema(df,"productsDf")
+       return df
+
+def createTables(start:SparkSession,listOfDf:list):
+    t = [ ( lambda x: class_pyspark.Sparkclass(strdict={}).createTempTables(x) ) (x) for x in listOfDf ]
 
 if __name__ == '__main__':
     main(proj_dir)
