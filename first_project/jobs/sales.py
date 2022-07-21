@@ -54,7 +54,7 @@ def importData(start:SparkSession, datapath:str, pattern:Optional[str]=None) -> 
 
 def showMySchema(df:DataFrame, filename:str) -> None:
     if isinstance(df, DataFrame):
-        class_pyspark.Sparkclass(strdict={}).debugDf(df, filename)
+        class_pyspark.Sparkclass(strdict={}).debugDataFrames(df, filename)
 
 def transformData(start:SparkSession,transactionsDf:DataFrame,customerDf:DataFrame,productsDf:DataFrame) -> DataFrame:
     #print(f"I AM TRANSFORMING --  \n{transactionsDf}\n SCHEMA --{showMySchema(transactionsDf)}")
@@ -87,6 +87,7 @@ def cleanProducts(df:DataFrame) -> DataFrame:
 
 def createTables(start:SparkSession,listOfDf:list):
     t = [ ( lambda x: class_pyspark.Sparkclass(strdict={}).createTempTables(x) ) (x) for x in listOfDf ]
+    d = [ ( lambda x: class_pyspark.Sparkclass(strdict={}).debugTables(x) ) (x) for x in start.catalog.listTables() ]
 
 if __name__ == '__main__':
     main(proj_dir)

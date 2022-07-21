@@ -2,6 +2,7 @@
 import json, os, re, sys
 from typing import Any, Callable,Optional, Tuple
 from venv import create
+from numpy import isin
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
@@ -11,6 +12,7 @@ class Sparkclass:
 
     def __init__(self, strdict):    #blank dict is passed from sales job
         self.strdict = strdict
+        self.debug_dir = f"{sales.proj_dir}/logs"
     
     def sparkStart(self, kwargs:dict):
         MASTER = kwargs['spark_conf']['master']     #passing config values for spark session
@@ -124,38 +126,58 @@ class Sparkclass:
         return makeDf(filelist, filetype)
 
     def createTempTables(self,tupleDf:tuple):
-        print(tupleDf)
-        
+        if isinstance(tupleDf,tuple) and len(tupleDf) == 2:
+            tupleDf[0].createOrReplaceTempView(tupleDf[1])
+            return tupleDf
 
-    def debugDf(self, df:DataFrame, filename:str) -> None:
+    def debugcreateContext(self, paths:tuple, content:dict) -> None:
         
-        def makeDirectory() -> None:
-            if not os.path.exists(f"{sales.proj_dir}/logs/"):
-                os.makedirs(f"{sales.proj_dir}/logs/")
-
-        def createFilepath(filename:str) -> str:
-            return f"{sales.proj_dir}/logs/{filename}.json"
-        
-        def dfToString(df:DataFrame) -> str:
-            return df._jdf.schema().treeString()
-
-        def createContent(df:DataFrame) -> dict:
-            content = {}
-            content['count'] = df.count()
-            content['schema'] = json.loads(df.schema.json())
-            return json.dumps(content, sort_keys=False, indent = 4, default = str)
+        def makeDirectory(directory:str) -> None:
+            if not os.path.exists(directory):
+                os.makedirs(directory)
         
         def createFile(filepath:str, content:Any) -> None:
             with open(filepath, 'a') as f:
-                f.write("{}\n".format(content))
+                f.write(content)
             f.close()
 
         def deleteFiles(filepath:str) -> None:
             if os.path.exists(filepath):
                 os.remove(filepath)
         
-        makeDirectory()
-        filepath = createFilepath(filename)
-        #content_log = dfToString(df)
+        directory = paths[0]
+        filepath = paths[1]
+        
+        makeDirectory(directory)
         deleteFiles(filepath)
-        createFile(filepath,createContent(df))
+        createFile(filepath,content)
+    
+    def debugDataFrames(self,df:DataFrame, filename:str) -> None:
+
+        def createFilePath(directory:str, filename:str) -> str:
+            d = f"{directory}/dataframes"
+            return d, f"{d}/{filename}.json"
+
+        def createContent(df:DataFrame) -> dict:
+            content = {}
+            content['count'] = df.count()
+            content['schema'] = json.loads(df.schema.json())
+            return json.dumps(content, sort_keys=False, indent = 4, default = str)
+
+        path = createFilePath(self.debug_dir, filename)
+        Sparkclass(self.debug_dir).debugcreateContext(path, createContent(df))
+    
+    def debugTables(self, table) -> None:
+        
+        def createFilePath(directory:str, filename:str) -> str:
+            d = f"{directory}/tables"
+            return d, f"{d}/{filename}.json"
+
+        def createTables(table) -> dict:
+            content = {}
+            content['table'] = table._asdict()
+            content['dir.table'] = dir(table)
+            return json.dumps(content, sort_keys=False, indent = 4, default = str)
+
+        path = createFilePath(self.debug_dir, table.name)
+        Sparkclass(self.debug_dir).debugcreateContext(path, createTables(table))

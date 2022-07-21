@@ -1,25 +1,7 @@
 {
-    "count": 4497,
+    "count": 64,
     "schema": {
         "fields": [
-            {
-                "metadata": {},
-                "name": "customer_id",
-                "nullable": true,
-                "type": "string"
-            },
-            {
-                "metadata": {},
-                "name": "date_of_purchase",
-                "nullable": true,
-                "type": "string"
-            },
-            {
-                "metadata": {},
-                "name": "price",
-                "nullable": true,
-                "type": "integer"
-            },
             {
                 "metadata": {},
                 "name": "product_id",
@@ -28,9 +10,15 @@
             },
             {
                 "metadata": {},
-                "name": "date",
+                "name": "product_description",
                 "nullable": true,
-                "type": "date"
+                "type": "string"
+            },
+            {
+                "metadata": {},
+                "name": "product_category",
+                "nullable": true,
+                "type": "string"
             }
         ],
         "type": "struct"
