@@ -2,11 +2,13 @@
 import json, os, re, sys
 from typing import Any, Callable,Optional, Tuple
 from venv import create
+from delta import configure_spark_with_delta_pip
 from numpy import isin
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
 from jobs import sales
+from delta import configure_spark_with_delta_pip
 
 class Sparkclass:
 
@@ -15,22 +17,52 @@ class Sparkclass:
         self.debug_dir = f"{sales.proj_dir}/logs"
     
     def sparkStart(self, kwargs:dict):
-        MASTER = kwargs['spark_conf']['master']     #passing config values for spark session
-        APP_NAME = kwargs['spark_conf']['app_name']
-        #LOG_LEVEL = kwargs['log']['level']
-        
-        def createSession(master:Optional[str]="local[*]",app_name:Optional[str]="myapp"):
-            spark = SparkSession.builder.appName(app_name).master(master).getOrCreate()     #creating a spark session
-            print(f"Session Created !! - {spark}")
-            return spark
+               
+        def createBuilder(master:str,app_name:str, config:dict) -> SparkSession.Builder:
+            
+            builder = SparkSession.builder.appName(app_name).master(master)
+            
+            return configDeltaLake(builder, config)
+
+        def configDeltaLake(builder:SparkSession.Builder, config:dict):
+            
+            if isinstance(builder, SparkSession.Builder) and config.get('deltalake') == True:
+                
+                builder \
+                    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+                    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+                
+                return configure_spark_with_delta_pip(builder)
+            
+            else:
+                return builder
+
+        def createSparkSession(builder:SparkSession.Builder) -> SparkSession:
+            
+            if isinstance(builder, SparkSession.Builder):
+                    
+                return builder.getOrCreate()     #creating a spark session
 
         def setLogging():
             pass
 
         def getSettings(spark:SparkSession) -> None:
-            print(spark.sparkContext.getConf().getAll())    #show spark settings
-            
-        spark = createSession(MASTER, APP_NAME) #Sparksession variable
+            """show spark settings"""
+            c ={}
+            c['spark.version'] = spark.version
+            c['spark.sparkContext'] = spark.sparkContext.getConf().getAll()
+            content = json.dumps(c, sort_keys = False, indent = 4, default = str)
+            Sparkclass(self.strdict).debugcreateContext((f"{self.debug_dir}",f"{self.debug_dir}/SparkSession.json"), content)
+
+        MASTER = kwargs.get('spark_conf', {}).get('master', 'local[*]')     #passing config values for spark session
+        APP_NAME = kwargs.get('spark_conf').get('app_name', 'sales_app')
+        CONFIG = kwargs.get('config')
+
+        #LOG_LEVEL = kwargs.get('log').get('level')
+        
+        builder = createBuilder(MASTER, APP_NAME, CONFIG)
+        spark = createSparkSession(builder) #Sparksession variable
+        getSettings(spark)
 
         return spark
         
@@ -165,7 +197,7 @@ class Sparkclass:
             return json.dumps(content, sort_keys=False, indent = 4, default = str)
 
         path = createFilePath(self.debug_dir, filename)
-        Sparkclass(self.debug_dir).debugcreateContext(path, createContent(df))
+        Sparkclass(self.strdict).debugcreateContext(path, createContent(df))
     
     def debugTables(self, table) -> None:
         
@@ -180,4 +212,4 @@ class Sparkclass:
             return json.dumps(content, sort_keys=False, indent = 4, default = str)
 
         path = createFilePath(self.debug_dir, table.name)
-        Sparkclass(self.debug_dir).debugcreateContext(path, createTables(table))
+        Sparkclass(self.strdict).debugcreateContext(path, createTables(table))

@@ -7,5 +7,9 @@
     "log":
     {
         "level":null
+    },
+    "config":
+    {
+        "deltalake":true
     }
 }

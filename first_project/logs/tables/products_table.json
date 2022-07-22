@@ -8,7 +8,6 @@
     },
     "dir.table": [
         "__add__",
-        "__annotations__",
         "__class__",
         "__class_getitem__",
         "__contains__",
@@ -34,7 +33,6 @@
         "__mul__",
         "__ne__",
         "__new__",
-        "__orig_bases__",
         "__reduce__",
         "__reduce_ex__",
         "__repr__",
@@ -47,6 +45,7 @@
         "_asdict",
         "_field_defaults",
         "_fields",
+        "_is_namedtuple_",
         "_make",
         "_replace",
         "count",
