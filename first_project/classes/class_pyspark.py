@@ -162,6 +162,11 @@ class Sparkclass:
             tupleDf[0].createOrReplaceTempView(tupleDf[1])
             return tupleDf
 
+    def exportDf(self,tupleDf:tuple):
+        if isinstance(tupleDf,tuple) and len(tupleDf) == 2 and self.strdict.get("export"):
+            path = f"{self.strdict.get('export')}\{tupleDf[1]}"
+            print(path)
+
     def debugcreateContext(self, paths:tuple, content:dict) -> None:
         
         def makeDirectory(directory:str) -> None:

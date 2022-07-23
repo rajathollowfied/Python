@@ -57,10 +57,9 @@ def showMySchema(df:DataFrame, filename:str) -> None:
         class_pyspark.Sparkclass(strdict={}).debugDataFrames(df, filename)
 
 def transformData(start:SparkSession,transactionsDf:DataFrame,customerDf:DataFrame,productsDf:DataFrame) -> DataFrame:
-    #print(f"I AM TRANSFORMING --  \n{transactionsDf}\n SCHEMA --{showMySchema(transactionsDf)}")
-    #print(f"\n{customerDf}\n SCHEMA --{showMySchema(customerDf)}")
-    #print(f"\n{productsDf}\n SCHEMA --{showMySchema(productsDf)}")
-    createTables(start,[(cleanTransactions(transactionsDf),"transactions_table"),(cleanCustomers(customerDf),"customers_table"),(cleanProducts(productsDf),"products_table")])
+    
+    #createTables(start,[(cleanTransactions(transactionsDf),"transactions_table"),(cleanCustomers(customerDf),"customers_table"),(cleanProducts(productsDf),"products_table")])
+    exportTables(start,[(cleanTransactions(transactionsDf),"transactions_table"),(cleanCustomers(customerDf),"customers_table"),(cleanProducts(productsDf),"products_table")])
     
 
 def cleanTransactions(df:DataFrame) -> DataFrame:
@@ -89,5 +88,9 @@ def createTables(start:SparkSession,listOfDf:list):
     t = [ ( lambda x: class_pyspark.Sparkclass(strdict={}).createTempTables(x) ) (x) for x in listOfDf ]
     d = [ ( lambda x: class_pyspark.Sparkclass(strdict={}).debugTables(x) ) (x) for x in start.catalog.listTables() ]
 
+def exportTables(start:SparkSession,listOfDf:list):
+    #t = [ ( lambda x: class_pyspark.Sparkclass(strdict={}).exportDf(x) ) (x) for x in listOfDf ]
+    class_pyspark.Sparkclass(strdict={"export":f"{proj_dir}\logs\delta\sales"}).exportDf(listOfDf[0])
+    
 if __name__ == '__main__':
     main(proj_dir)
