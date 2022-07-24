@@ -89,8 +89,7 @@ def createTables(start:SparkSession,listOfDf:list):
     d = [ ( lambda x: class_pyspark.Sparkclass(strdict={}).debugTables(x) ) (x) for x in start.catalog.listTables() ]
 
 def exportTables(start:SparkSession,listOfDf:list):
-    #t = [ ( lambda x: class_pyspark.Sparkclass(strdict={}).exportDf(x) ) (x) for x in listOfDf ]
-    class_pyspark.Sparkclass(strdict={"export":f"{proj_dir}\logs\delta\sales"}).exportDf(listOfDf[0])
+    t = [ ( lambda x: class_pyspark.Sparkclass(strdict={"export":f"{proj_dir}\logs\delta\sales"}).exportDf(x) ) (x) for x in listOfDf ]
     
 if __name__ == '__main__':
     main(proj_dir)

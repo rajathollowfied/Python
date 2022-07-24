@@ -9,6 +9,8 @@ from pyspark.sql import SparkSession
 from pyspark import SparkContext
 from jobs import sales
 from delta import configure_spark_with_delta_pip
+import findspark
+findspark.init()
 
 class Sparkclass:
 
@@ -165,7 +167,7 @@ class Sparkclass:
     def exportDf(self,tupleDf:tuple):
         if isinstance(tupleDf,tuple) and len(tupleDf) == 2 and self.strdict.get("export"):
             path = f"{self.strdict.get('export')}\{tupleDf[1]}"
-            print(path)
+            tupleDf[0].write.format("delta").mode("overwrite").save(path)
 
     def debugcreateContext(self, paths:tuple, content:dict) -> None:
         
