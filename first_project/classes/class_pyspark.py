@@ -3,20 +3,20 @@ import json, os, re, sys
 from typing import Any, Callable,Optional, Tuple
 from venv import create
 from delta import configure_spark_with_delta_pip
-from numpy import isin
+from numpy import diff, isin
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
 from jobs import sales
 from delta import configure_spark_with_delta_pip
-import findspark
-findspark.init()
+
 
 class Sparkclass:
 
     def __init__(self, strdict):    #blank dict is passed from sales job
         self.strdict = strdict
         self.debug_dir = f"{sales.proj_dir}/logs"
+        self.config_paths = (f"{self.debug_dir}", f"{self.debug_dir}/SparkSession.json")
     
     def sparkStart(self, kwargs:dict):
                
@@ -48,13 +48,14 @@ class Sparkclass:
         def setLogging():
             pass
 
-        def getSettings(spark:SparkSession) -> None:
+        def getSettings(spark:SparkSession, config_path:tuple) -> None:
             """show spark settings"""
             c ={}
             c['spark.version'] = spark.version
             c['spark.sparkContext'] = spark.sparkContext.getConf().getAll()
             content = json.dumps(c, sort_keys = False, indent = 4, default = str)
-            Sparkclass(self.strdict).debugcreateContext((f"{self.debug_dir}",f"{self.debug_dir}/SparkSession.json"), content)
+            #Sparkclass(self.strdict).debugcreateContext((f"{self.debug_dir}",f"{self.debug_dir}/SparkSession.json"), content)
+            Sparkclass(self.strdict).debugcreateContext((config_path[0], config_path[1]), content)
 
         MASTER = kwargs.get('spark_conf', {}).get('master', 'local[*]')     #passing config values for spark session
         APP_NAME = kwargs.get('spark_conf').get('app_name', 'sales_app')
@@ -64,7 +65,7 @@ class Sparkclass:
         
         builder = createBuilder(MASTER, APP_NAME, CONFIG)
         spark = createSparkSession(builder) #Sparksession variable
-        getSettings(spark)
+        getSettings(spark, self.config_paths)
 
         return spark
         
@@ -154,10 +155,14 @@ class Sparkclass:
                     .load(filelist)
             return df
         
-        def makeDf(filelist:list, filetype: str) -> DataFrame:
-            return dfFromCSV(filelist) if filetype == "csv" else dfFromJSON(filelist) if filetype == "json" else None
-        
-        return makeDf(filelist, filetype)
+        def loopFunctions(spark:SparkSession, filelist:list, filetype: str) -> DataFrame:
+            #return dfFromCSV(filelist) if filetype == "csv" else dfFromJSON(filelist) if filetype == "json" else None
+            if isinstance(spark, SparkSession) and isinstance(filelist, list) and len(filelist) > 0:
+                functionlist = [dfFromCSV, dfFromJSON]
+                result = list(filter(None, [f(spark, filelist, filetype) for f in functionlist]))
+                return result[0] if len(result) > 0 else None
+
+        return loopFunctions(spark, filelist, filetype)
 
     def createTempTables(self,tupleDf:tuple):
         if isinstance(tupleDf,tuple) and len(tupleDf) == 2:
@@ -168,6 +173,8 @@ class Sparkclass:
         if isinstance(tupleDf,tuple) and len(tupleDf) == 2 and self.strdict.get("export"):
             path = f"{self.strdict.get('export')}\{tupleDf[1]}"
             tupleDf[0].write.format("delta").mode("overwrite").save(path)
+        
+        
 
     def debugcreateContext(self, paths:tuple, content:dict) -> None:
         

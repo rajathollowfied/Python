@@ -10,12 +10,12 @@
             "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
         ],
         [
-            "spark.jars",
-            "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
+            "spark.app.initial.jar.urls",
+            "spark://DESKTOP-0E1RCM2:57292/jars/io.delta_delta-storage-2.0.0.jar,spark://DESKTOP-0E1RCM2:57292/jars/io.delta_delta-core_2.12-2.0.0.jar,spark://DESKTOP-0E1RCM2:57292/jars/org.antlr_antlr4-runtime-4.8.jar,spark://DESKTOP-0E1RCM2:57292/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
         ],
         [
-            "spark.app.submitTime",
-            "1658684251696"
+            "spark.jars",
+            "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
         ],
         [
             "spark.repl.local.jars",
@@ -26,16 +26,20 @@
             "DESKTOP-0E1RCM2"
         ],
         [
-            "spark.app.id",
-            "local-1658684253514"
+            "spark.app.submitTime",
+            "1658778552129"
         ],
         [
             "spark.executor.id",
             "driver"
         ],
         [
-            "spark.app.initial.jar.urls",
-            "spark://DESKTOP-0E1RCM2:53878/jars/org.antlr_antlr4-runtime-4.8.jar,spark://DESKTOP-0E1RCM2:53878/jars/io.delta_delta-storage-2.0.0.jar,spark://DESKTOP-0E1RCM2:53878/jars/io.delta_delta-core_2.12-2.0.0.jar,spark://DESKTOP-0E1RCM2:53878/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
+            "spark.driver.port",
+            "57292"
+        ],
+        [
+            "spark.app.id",
+            "local-1658778554196"
         ],
         [
             "spark.jars.packages",
@@ -66,10 +70,6 @@
             "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar"
         ],
         [
-            "spark.driver.port",
-            "53878"
-        ],
-        [
             "spark.serializer.objectStreamReset",
             "100"
         ],
@@ -83,7 +83,7 @@
         ],
         [
             "spark.app.startTime",
-            "1658684251920"
+            "1658778552363"
         ],
         [
             "spark.ui.showConsoleProgress",

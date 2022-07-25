@@ -19,7 +19,7 @@ job_name = os.path.basename(__file__)
 sys.path.insert(1, proj_dir)
 from classes import class_pyspark
 
-def main(proj_dir:str) -> None:
+def main() -> None:
     
     #calling function to open and read the file(s) and return contents as dict type
     jsonConfig = openConfigFile(f"{proj_dir}/config_json/sales.json")
@@ -32,7 +32,7 @@ def main(proj_dir:str) -> None:
     customerDf = importData(start, f"{proj_dir}/test_data/sales/customers.csv")
     productsDf = importData(start, f"{proj_dir}/test_data/sales/products.csv")
 
-    transformData(start,transactionsDf,customerDf,productsDf)
+    transformData(start,transactionsDf,customerDf,productsDf, f"{proj_dir}/test-delta/sales")
     
     sparkStop(start)    #stop the spark job
     
@@ -56,10 +56,17 @@ def showMySchema(df:DataFrame, filename:str) -> None:
     if isinstance(df, DataFrame):
         class_pyspark.Sparkclass(strdict={}).debugDataFrames(df, filename)
 
-def transformData(start:SparkSession,transactionsDf:DataFrame,customerDf:DataFrame,productsDf:DataFrame) -> DataFrame:
+def transformData(start:SparkSession,transactionsDf:DataFrame,customerDf:DataFrame,productsDf:DataFrame, path:str ) -> DataFrame:
     
     #createTables(start,[(cleanTransactions(transactionsDf),"transactions_table"),(cleanCustomers(customerDf),"customers_table"),(cleanProducts(productsDf),"products_table")])
-    exportTables(start,[(cleanTransactions(transactionsDf),"transactions_table"),(cleanCustomers(customerDf),"customers_table"),(cleanProducts(productsDf),"products_table")])
+    #exportTables(start,[(cleanTransactions(transactionsDf),"transactions_table"),(cleanCustomers(customerDf),"customers_table"),(cleanProducts(productsDf),"products_table")])
+    
+    exportTables(start,[
+        (cleanTransactions(transactionsDf),"transactions_table"),
+        (cleanCustomers(customerDf),"customers_table"),
+        (cleanProducts(productsDf),"products_table")
+    ])
+
     
 
 def cleanTransactions(df:DataFrame) -> DataFrame:
@@ -92,4 +99,4 @@ def exportTables(start:SparkSession,listOfDf:list):
     t = [ ( lambda x: class_pyspark.Sparkclass(strdict={"export":f"{proj_dir}\logs\delta\sales"}).exportDf(x) ) (x) for x in listOfDf ]
     
 if __name__ == '__main__':
-    main(proj_dir)
+    main()
