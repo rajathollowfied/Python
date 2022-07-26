@@ -10,10 +10,6 @@
             "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
         ],
         [
-            "spark.app.initial.jar.urls",
-            "spark://DESKTOP-0E1RCM2:57292/jars/io.delta_delta-storage-2.0.0.jar,spark://DESKTOP-0E1RCM2:57292/jars/io.delta_delta-core_2.12-2.0.0.jar,spark://DESKTOP-0E1RCM2:57292/jars/org.antlr_antlr4-runtime-4.8.jar,spark://DESKTOP-0E1RCM2:57292/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
-        ],
-        [
             "spark.jars",
             "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
         ],
@@ -22,24 +18,24 @@
             "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
         ],
         [
-            "spark.driver.host",
-            "DESKTOP-0E1RCM2"
+            "spark.app.initial.jar.urls",
+            "spark://DESKTOP-0E1RCM2:50127/jars/io.delta_delta-core_2.12-2.0.0.jar,spark://DESKTOP-0E1RCM2:50127/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar,spark://DESKTOP-0E1RCM2:50127/jars/org.antlr_antlr4-runtime-4.8.jar,spark://DESKTOP-0E1RCM2:50127/jars/io.delta_delta-storage-2.0.0.jar"
         ],
         [
-            "spark.app.submitTime",
-            "1658778552129"
+            "spark.driver.host",
+            "DESKTOP-0E1RCM2"
         ],
         [
             "spark.executor.id",
             "driver"
         ],
         [
-            "spark.driver.port",
-            "57292"
+            "spark.app.startTime",
+            "1658869332757"
         ],
         [
-            "spark.app.id",
-            "local-1658778554196"
+            "spark.driver.port",
+            "50127"
         ],
         [
             "spark.jars.packages",
@@ -58,6 +54,10 @@
             "io.delta.sql.DeltaSparkSessionExtension"
         ],
         [
+            "spark.app.id",
+            "local-1658869334428"
+        ],
+        [
             "spark.rdd.compress",
             "True"
         ],
@@ -74,16 +74,16 @@
             "100"
         ],
         [
+            "spark.app.submitTime",
+            "1658869332538"
+        ],
+        [
             "spark.master",
             "local[*]"
         ],
         [
             "spark.submit.deployMode",
             "client"
-        ],
-        [
-            "spark.app.startTime",
-            "1658778552363"
         ],
         [
             "spark.ui.showConsoleProgress",

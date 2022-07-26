@@ -137,7 +137,7 @@ class Sparkclass:
 
     def createDataFrame(self,spark:SparkSession,filelist:list,filetype:str) -> DataFrame:
         
-        def dfFromCSV(filelist:list) -> DataFrame:
+        def dfFromCSV(spark:SparkSession, filelist:list, filetype: str) -> DataFrame:
             
             if isinstance(filelist, list) and len(filelist) > 0:
                 df = spark.read.format("csv") \
@@ -146,7 +146,7 @@ class Sparkclass:
                     .load(filelist)
             return df              
 
-        def dfFromJSON(filelist:list) -> DataFrame:
+        def dfFromJSON(spark:SparkSession, filelist:list, filetype: str) -> DataFrame:
             
             if isinstance(filelist, list) and len(filelist) > 0:
                 df = spark.read.format("json") \
@@ -170,10 +170,27 @@ class Sparkclass:
             return tupleDf
 
     def exportDf(self,tupleDf:tuple):
-        if isinstance(tupleDf,tuple) and len(tupleDf) == 2 and self.strdict.get("export"):
-            path = f"{self.strdict.get('export')}\{tupleDf[1]}"
-            tupleDf[0].write.format("delta").mode("overwrite").save(path)
+        #if isinstance(tupleDf,tuple) and len(tupleDf) == 2 and self.strdict.get("export"):
+         #   path = f"{self.strdict.get('export')}\{tupleDf[1]}"
+          #  tupleDf[0].write.format("delta").mode("overwrite").save(path)
+
+        def openSession(spark:SparkSession) -> list:
+            return spark.sparkContext.getConf().getAll()
+
+        def loopSession():
+            pass
+        def validateDependency(sessionList:list) -> bool:
+            pass
         
+        def write(tupleDf:tuple) -> None:
+            if isinstance(tupleDf, tuple) and len(tupleDf) > 0:
+                spark = tupleDf[0]
+                df = tupleDf[1]
+                settings = tupleDf[2]
+
+                validateDependency(openSession(spark))
+    
+        write(tupleDf)
         
 
     def debugcreateContext(self, paths:tuple, content:dict) -> None:
