@@ -6,6 +6,10 @@
             "-XX:+IgnoreUnrecognizedVMOptions --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.nio.cs=ALL-UNNAMED --add-opens=java.base/sun.security.action=ALL-UNNAMED --add-opens=java.base/sun.util.calendar=ALL-UNNAMED --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED"
         ],
         [
+            "spark.driver.port",
+            "52900"
+        ],
+        [
             "spark.files",
             "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
         ],
@@ -14,12 +18,12 @@
             "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
         ],
         [
-            "spark.repl.local.jars",
-            "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
+            "spark.app.initial.jar.urls",
+            "spark://DESKTOP-0E1RCM2:52900/jars/org.antlr_antlr4-runtime-4.8.jar,spark://DESKTOP-0E1RCM2:52900/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar,spark://DESKTOP-0E1RCM2:52900/jars/io.delta_delta-core_2.12-2.0.0.jar,spark://DESKTOP-0E1RCM2:52900/jars/io.delta_delta-storage-2.0.0.jar"
         ],
         [
-            "spark.app.initial.jar.urls",
-            "spark://DESKTOP-0E1RCM2:50127/jars/io.delta_delta-core_2.12-2.0.0.jar,spark://DESKTOP-0E1RCM2:50127/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar,spark://DESKTOP-0E1RCM2:50127/jars/org.antlr_antlr4-runtime-4.8.jar,spark://DESKTOP-0E1RCM2:50127/jars/io.delta_delta-storage-2.0.0.jar"
+            "spark.repl.local.jars",
+            "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
         ],
         [
             "spark.driver.host",
@@ -31,11 +35,7 @@
         ],
         [
             "spark.app.startTime",
-            "1658869332757"
-        ],
-        [
-            "spark.driver.port",
-            "50127"
+            "1658957873110"
         ],
         [
             "spark.jars.packages",
@@ -54,10 +54,6 @@
             "io.delta.sql.DeltaSparkSessionExtension"
         ],
         [
-            "spark.app.id",
-            "local-1658869334428"
-        ],
-        [
             "spark.rdd.compress",
             "True"
         ],
@@ -70,12 +66,12 @@
             "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar"
         ],
         [
-            "spark.serializer.objectStreamReset",
-            "100"
+            "spark.app.id",
+            "local-1658957874681"
         ],
         [
-            "spark.app.submitTime",
-            "1658869332538"
+            "spark.serializer.objectStreamReset",
+            "100"
         ],
         [
             "spark.master",
@@ -84,6 +80,10 @@
         [
             "spark.submit.deployMode",
             "client"
+        ],
+        [
+            "spark.app.submitTime",
+            "1658957872914"
         ],
         [
             "spark.ui.showConsoleProgress",

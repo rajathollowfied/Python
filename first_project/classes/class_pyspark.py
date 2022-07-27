@@ -1,4 +1,5 @@
 # importing modules
+from asyncore import loop
 import json, os, re, sys
 from typing import Any, Callable,Optional, Tuple
 from venv import create
@@ -104,7 +105,7 @@ class Sparkclass:
                 extts = list(set([os.path.splitext(f)[1] for f in filelist]))
                 return extts[0][1:] if len(extts) == 1 else None
 
-
+        
         return fileOrDirectory(spark,datapath,pattern)                       
     
     def getFileExtension(self, file:str) -> str: #file extension of a single file
@@ -170,28 +171,59 @@ class Sparkclass:
             return tupleDf
 
     def exportDf(self,tupleDf:tuple):
-        #if isinstance(tupleDf,tuple) and len(tupleDf) == 2 and self.strdict.get("export"):
-         #   path = f"{self.strdict.get('export')}\{tupleDf[1]}"
-          #  tupleDf[0].write.format("delta").mode("overwrite").save(path)
-
+        
         def openSession(spark:SparkSession) -> list:
             return spark.sparkContext.getConf().getAll()
 
-        def loopSession():
-            pass
-        def validateDependency(sessionList:list) -> bool:
-            pass
+        def matchPattern(item:list, pattern:str) -> str:
+            match = re.search(pattern, item)
+            return match[0] if match else None
+
+        def loopSession(sessionList:list, pattern:str) -> list:
+            if isinstance(sessionList, list):
+                
+                result = list(filter(None, [[(lambda x: matchPattern(x, pattern))(x) for x in linelist] for linelist in sessionList]))
+                if len(result)>0:
+                    for i in result:
+                        for j in i:
+                            if(j == pattern):
+                                return j
+                            else:
+                                continue
+                else:
+                    return None
+
+
+        def validateDependency(sessionList:list, pattern:str) -> bool:
+            formatFound = loopSession(sessionList, pattern)
+            if formatFound == "delta":
+                return True
+            else:
+                return False
         
         def write(tupleDf:tuple) -> None:
             if isinstance(tupleDf, tuple) and len(tupleDf) > 0:
                 spark = tupleDf[0]
                 df = tupleDf[1]
                 settings = tupleDf[2]
+                print("im in write function biyatch")
 
-                validateDependency(openSession(spark))
+                if validateDependency(openSession(spark), settings.get('format')) == True:
+                    print("validity checked")
+                    if settings.get('format') == "delta":
+                        print("should be calling export function")
+                        Sparkclass(self.strdict).exportDelta(spark, df, settings)
+                    else:
+                        print("bruh~")
+                        df.write.format(settings.get('format').mode("overwrite").save(settings.get('path')))
+                else:
+                    print("bruuuuuh")
+                
     
         write(tupleDf)
-        
+
+    def exportDelta(self, spark:SparkSession, df:DataFrame, settings:dict) -> None:
+        print(f"dataframe - {df}")
 
     def debugcreateContext(self, paths:tuple, content:dict) -> None:
         

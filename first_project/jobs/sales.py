@@ -59,8 +59,7 @@ def showMySchema(df:DataFrame, filename:str) -> None:
 def transformData(start:SparkSession,transactionsDf:DataFrame,customerDf:DataFrame,productsDf:DataFrame, path:str ) -> DataFrame:
     
     #createTables(start,[(cleanTransactions(transactionsDf),"transactions_table"),(cleanCustomers(customerDf),"customers_table"),(cleanProducts(productsDf),"products_table")])
-    
-    exportTables([
+     exportTables([
         (start,cleanTransactions(transactionsDf), {"format":"delta", "path":f"{path}/transactions", "key":"date_of_purchase"}),
         (start,cleanCustomers(customerDf),{"format":"delta", "path":f"{path}/customers", "key":"customer_id"}),
         (start,cleanProducts(productsDf),{"format":"delta", "path":f"{path}/products", "key":"product_id"})
@@ -69,8 +68,11 @@ def transformData(start:SparkSession,transactionsDf:DataFrame,customerDf:DataFra
     
 
 def cleanTransactions(df:DataFrame) -> DataFrame:
+                            
     if isinstance(df, DataFrame):
+        
         df1 = df.withColumn("basket_explode", explode(col("basket"))).drop("basket")
+
         df2 = df1.select(col("customer_id"), \
                 col("date_of_purchase"), \
                 col("basket_explode.*"))    \
