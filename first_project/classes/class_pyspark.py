@@ -138,7 +138,7 @@ class Sparkclass:
 
     def createDataFrame(self,spark:SparkSession,filelist:list,filetype:str) -> DataFrame:
         
-        def dfFromCSV(spark:SparkSession, filelist:list, filetype: str) -> DataFrame:
+        def dfFromCSV(filelist:list) -> DataFrame:
             
             if isinstance(filelist, list) and len(filelist) > 0:
                 df = spark.read.format("csv") \
@@ -147,7 +147,7 @@ class Sparkclass:
                     .load(filelist)
             return df              
 
-        def dfFromJSON(spark:SparkSession, filelist:list, filetype: str) -> DataFrame:
+        def dfFromJSON(filelist:list) -> DataFrame:
             
             if isinstance(filelist, list) and len(filelist) > 0:
                 df = spark.read.format("json") \
@@ -156,14 +156,18 @@ class Sparkclass:
                     .load(filelist)
             return df
         
-        def loopFunctions(spark:SparkSession, filelist:list, filetype: str) -> DataFrame:
-            #return dfFromCSV(filelist) if filetype == "csv" else dfFromJSON(filelist) if filetype == "json" else None
-            if isinstance(spark, SparkSession) and isinstance(filelist, list) and len(filelist) > 0:
-                functionlist = [dfFromCSV, dfFromJSON]
-                result = list(filter(None, [f(spark, filelist, filetype) for f in functionlist]))
-                return result[0] if len(result) > 0 else None
+        #def loopFunctions(spark:SparkSession, filelist:list, filetype: str) -> DataFrame:
+        #    #return dfFromCSV(filelist) if filetype == "csv" else dfFromJSON(filelist) if filetype == "json" else None
+        #    if isinstance(spark, SparkSession) and isinstance(filelist, list) and len(filelist) > 0:
+        #        functionlist = [dfFromCSV, dfFromJSON]
+        #        result = list(filter(None, [f(spark, filelist, filetype) for f in functionlist]))
+        #        return result[0] if len(result) > 0 else None
+        def makeDf(filelist:list, filetype: str) -> DataFrame:
+            return dfFromCSV(filelist) if filetype == "csv" else dfFromJSON(filelist) if filetype == "json" else None
+        
+        return makeDf(filelist, filetype)
 
-        return loopFunctions(spark, filelist, filetype)
+        #return loopFunctions(spark, filelist, filetype)
 
     def createTempTables(self,tupleDf:tuple):
         if isinstance(tupleDf,tuple) and len(tupleDf) == 2:

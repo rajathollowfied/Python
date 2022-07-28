@@ -5,7 +5,8 @@ from typing import Callable,Optional
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col,explode
-
+import findspark
+findspark.init()
 
 # setting up environment variables and logger information
 proj_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -70,14 +71,13 @@ def transformData(start:SparkSession,transactionsDf:DataFrame,customerDf:DataFra
 def cleanTransactions(df:DataFrame) -> DataFrame:
                             
     if isinstance(df, DataFrame):
-        
-        df1 = df.withColumn("basket_explode", explode(col("basket"))).drop("basket")
 
+        df1 = df.withColumn("basket_explode", explode(col("basket"))).drop("basket")
         df2 = df1.select(col("customer_id"), \
-                col("date_of_purchase"), \
-                col("basket_explode.*"))    \
-                    .withColumn("date", col("date_of_purchase").cast("Date"))   \
-                        .withColumn("price", col("price").cast("Integer"))
+                        col("date_of_purchase"), \
+                        col("basket_explode.*"))    \
+                            .withColumn("date", col("date_of_purchase").cast("Date"))   \
+                                .withColumn("price", col("price").cast("Integer"))
         showMySchema(df2,"transactionsDf")
         return df2
 
