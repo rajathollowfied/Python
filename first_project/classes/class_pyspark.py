@@ -3,13 +3,11 @@ from asyncore import loop
 import json, os, re, sys
 from typing import Any, Callable,Optional, Tuple
 from venv import create
-from delta import configure_spark_with_delta_pip
 from numpy import diff, isin
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
 from jobs import sales
-from delta import configure_spark_with_delta_pip
 
 
 class Sparkclass:
@@ -30,7 +28,7 @@ class Sparkclass:
         def configDeltaLake(builder:SparkSession.Builder, config:dict):
             
             if isinstance(builder, SparkSession.Builder) and config.get('deltalake') == True:
-                
+                from delta import configure_spark_with_delta_pip
                 builder \
                     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
                     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
@@ -157,7 +155,7 @@ class Sparkclass:
             return df
         
         #def loopFunctions(spark:SparkSession, filelist:list, filetype: str) -> DataFrame:
-        #    #return dfFromCSV(filelist) if filetype == "csv" else dfFromJSON(filelist) if filetype == "json" else None
+        
         #    if isinstance(spark, SparkSession) and isinstance(filelist, list) and len(filelist) > 0:
         #        functionlist = [dfFromCSV, dfFromJSON]
         #        result = list(filter(None, [f(spark, filelist, filetype) for f in functionlist]))
@@ -200,7 +198,7 @@ class Sparkclass:
 
         def validateDependency(sessionList:list, pattern:str) -> bool:
             formatFound = loopSession(sessionList, pattern)
-            if formatFound == "delta":
+            if formatFound == pattern:
                 return True
             else:
                 return False
@@ -210,24 +208,53 @@ class Sparkclass:
                 spark = tupleDf[0]
                 df = tupleDf[1]
                 settings = tupleDf[2]
-                print("im in write function biyatch")
-
+                
                 if validateDependency(openSession(spark), settings.get('format')) == True:
-                    print("validity checked")
+                    
                     if settings.get('format') == "delta":
-                        print("should be calling export function")
+                        
                         Sparkclass(self.strdict).exportDelta(spark, df, settings)
                     else:
-                        print("bruh~")
-                        df.write.format(settings.get('format').mode("overwrite").save(settings.get('path')))
-                else:
-                    print("bruuuuuh")
+                        
+                        df.write.format(settings.get('format').mode("overwrite").save(settings.get('path')))                 
                 
     
         write(tupleDf)
 
     def exportDelta(self, spark:SparkSession, df:DataFrame, settings:dict) -> None:
-        print(f"dataframe - {df}")
+        
+        from delta import DeltaTable
+        
+        def tableExist(spark, df, settings) -> None:
+            if DeltaTable.isDeltaTable(spark, settings.get('path')) == False:
+                #print(f"not exist: dataframe - {settings.get('path')}")
+                tableNew(spark, df, settings)
+            else:
+                #print(f"exist: dataframe - {settings.get('path')}")
+                tableMerge(spark, df, settings)
+        
+        def tableNew(spark:SparkSession, df:DataFrame, settings:dict) -> None:
+            df.write.format("delta") \
+                .mode("overwrite").option("overwriteSchema", "true") \
+                    .save(settings.get('path'))
+
+        def tableMerge(spark:SparkSession, df:DataFrame, settings:dict) -> None:
+            if settings.get('key') == None:
+                raise ValueError('No key present in settings dict used for merge')
+            if DeltaTable.isDeltaTable(spark, settings.get('path')) == True:
+                spark.sql("SET spark.databricks.delta.schema.autoMerge.enabled=true")
+                spark.sql("SET spark.databricks.delta.resolveMergeUpdateStructByName.enabled=false")
+                debugSession(spark)
+        
+        def debugSession(spark:SparkSession) -> None:
+            """show spark settings"""
+            c ={}
+            c['spark.version'] = spark.version
+            c['spark.sparkContext'] = spark.sparkContext.getConf().getAll()
+            content = json.dumps(c, sort_keys = False, indent = 4, default = str)
+            Sparkclass(self.strdict).debugcreateContext((self.config_path[0], f"{self.config_path[0]}/exportDelta.json"), content)
+        
+        tableExist(spark, df, settings)
 
     def debugcreateContext(self, paths:tuple, content:dict) -> None:
         

@@ -14,20 +14,8 @@
             "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
         ],
         [
-            "spark.app.id",
-            "local-1659046230242"
-        ],
-        [
             "spark.repl.local.jars",
             "file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-core_2.12-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/io.delta_delta-storage-2.0.0.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.antlr_antlr4-runtime-4.8.jar,file:///C:/Users/Rajat%20Sharma/.ivy2/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
-        ],
-        [
-            "spark.app.initial.jar.urls",
-            "spark://DESKTOP-0E1RCM2:58693/jars/org.antlr_antlr4-runtime-4.8.jar,spark://DESKTOP-0E1RCM2:58693/jars/io.delta_delta-storage-2.0.0.jar,spark://DESKTOP-0E1RCM2:58693/jars/io.delta_delta-core_2.12-2.0.0.jar,spark://DESKTOP-0E1RCM2:58693/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
-        ],
-        [
-            "spark.app.startTime",
-            "1659046228542"
         ],
         [
             "spark.driver.host",
@@ -38,20 +26,16 @@
             "driver"
         ],
         [
-            "spark.sql.warehouse.dir",
-            "file:/E:/work/spark-warehouse"
+            "spark.driver.port",
+            "50403"
         ],
         [
-            "spark.app.submitTime",
-            "1659046228281"
+            "spark.app.id",
+            "local-1659132900526"
         ],
         [
             "spark.jars.packages",
             "io.delta:delta-core_2.12:2.0.0"
-        ],
-        [
-            "spark.driver.port",
-            "58693"
         ],
         [
             "spark.app.name",
@@ -90,8 +74,24 @@
             "client"
         ],
         [
+            "spark.app.startTime",
+            "1659132898805"
+        ],
+        [
+            "spark.app.submitTime",
+            "1659132898643"
+        ],
+        [
+            "spark.app.initial.jar.urls",
+            "spark://DESKTOP-0E1RCM2:50403/jars/io.delta_delta-storage-2.0.0.jar,spark://DESKTOP-0E1RCM2:50403/jars/io.delta_delta-core_2.12-2.0.0.jar,spark://DESKTOP-0E1RCM2:50403/jars/org.antlr_antlr4-runtime-4.8.jar,spark://DESKTOP-0E1RCM2:50403/jars/org.codehaus.jackson_jackson-core-asl-1.9.13.jar"
+        ],
+        [
             "spark.ui.showConsoleProgress",
             "true"
+        ],
+        [
+            "spark.sql.warehouse.dir",
+            "file:/E:/work/Python/spark-warehouse"
         ],
         [
             "spark.sql.catalog.spark_catalog",
