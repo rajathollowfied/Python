@@ -60,12 +60,22 @@ def showMySchema(df:DataFrame, filename:str) -> None:
 def transformData(start:SparkSession,transactionsDf:DataFrame,customerDf:DataFrame,productsDf:DataFrame, path:str ) -> DataFrame:
     
     #createTables(start,[(cleanTransactions(transactionsDf),"transactions_table"),(cleanCustomers(customerDf),"customers_table"),(cleanProducts(productsDf),"products_table")])
-     exportTables([
-        (start,cleanTransactions(transactionsDf), {"format":"delta", "path":f"{path}/transactions", "key":"date_of_purchase"}),
-        (start,cleanCustomers(customerDf),{"format":"delta", "path":f"{path}/customers", "key":"customer_id"}),
-        (start,cleanProducts(productsDf),{"format":"delta", "path":f"{path}/products", "key":"product_id"})
+    #exportTables([
+    #    (start,cleanTransactions(transactionsDf), {"format":"delta", "path":f"{path}/transactions", "key":"date_of_purchase"}),
+    #    (start,cleanCustomers(customerDf),{"format":"delta", "path":f"{path}/customers", "key":"customer_id"}),
+    #    (start,cleanProducts(productsDf),{"format":"delta", "path":f"{path}/products", "key":"product_id"})
+    #])
+    
+    l = loadTables([
+        (start, f"{path}/transactions", "delta"), \
+        (start, f"{path}/customers", "delta"), \
+        (start, f"{path}/products", "delta") \
     ])
-
+    
+    listOfDf =list(zip( l ,["transactions","customers","products"]))
+    createTables(start, listOfDf)
+    df = start.sql("SELECT * FROM transactions")
+    df.show()
     
 
 def cleanTransactions(df:DataFrame) -> DataFrame:
@@ -98,6 +108,9 @@ def createTables(start:SparkSession,listOfDf:list):
 
 def exportTables(listOfDf:list):
     t = [ ( lambda x: class_pyspark.Sparkclass(strdict={}).exportDf(x) ) (x) for x in listOfDf ]
+
+def loadTables(listOfDf:list):
+    return [ ( lambda x: class_pyspark.Sparkclass(strdict={}).loadTables(x[0], x[1], x[2]) ) (x) for x in listOfDf ]    
     
 if __name__ == '__main__':
     main()

@@ -29,10 +29,8 @@ class Sparkclass:
             
             if isinstance(builder, SparkSession.Builder) and config.get('deltalake') == True:
                 from delta import configure_spark_with_delta_pip
-                builder \
-                    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+                builder.config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
                     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-                
                 return configure_spark_with_delta_pip(builder)
             
             else:
@@ -172,6 +170,13 @@ class Sparkclass:
             tupleDf[0].createOrReplaceTempView(tupleDf[1])
             return tupleDf
 
+    def loadTables(self,spark:SparkSession, path:str, format:str) -> list:
+        
+        if os.path.exists(path):
+            df = spark.read.format(format).option("mergeSchema", "true").load(path)
+            return df
+
+
     def exportDf(self,tupleDf:tuple):
         
         def openSession(spark:SparkSession) -> list:
@@ -232,6 +237,11 @@ class Sparkclass:
             else:
                 #print(f"exist: dataframe - {settings.get('path')}")
                 tableMerge(spark, df, settings)
+
+        def tableHistory(spark:SparkSession, df:DataFrame, settings:dict) -> None:
+            if DeltaTable.isDeltaTable(spark, settings.get('path')) == True:
+                dt = DeltaTable.forPath(spark, settings.get('path'))
+                dt.history().show()     #this will show history of the table versions , we can use vacuum function to remove previous table versions
         
         def tableNew(spark:SparkSession, df:DataFrame, settings:dict) -> None:
             df.write.format("delta") \
@@ -242,9 +252,12 @@ class Sparkclass:
             if settings.get('key') == None:
                 raise ValueError('No key present in settings dict used for merge')
             if DeltaTable.isDeltaTable(spark, settings.get('path')) == True:
-                spark.sql("SET spark.databricks.delta.schema.autoMerge.enabled=true")
-                spark.sql("SET spark.databricks.delta.resolveMergeUpdateStructByName.enabled=false")
+                #spark.sql("SET spark.databricks.delta.schema.autoMerge.enabled=true")
+                #spark.sql("SET spark.databricks.delta.resolveMergeUpdateStructByName.enabled=false")
                 debugSession(spark)
+                dt = DeltaTable.forPath(spark, settings.get('path'))
+                dt.alias("t").merge(df.alias('s'),f"t.{settings.get('key')} = s.{settings.get('key')}") \
+                    .whenNotMatchedInsertAll().execute()
         
         def debugSession(spark:SparkSession) -> None:
             """show spark settings"""
@@ -252,9 +265,10 @@ class Sparkclass:
             c['spark.version'] = spark.version
             c['spark.sparkContext'] = spark.sparkContext.getConf().getAll()
             content = json.dumps(c, sort_keys = False, indent = 4, default = str)
-            Sparkclass(self.strdict).debugcreateContext((self.config_path[0], f"{self.config_path[0]}/exportDelta.json"), content)
+            Sparkclass(self.strdict).debugcreateContext((self.config_paths[0], f"{self.config_paths[0]}/exportDelta.json"), content)
         
         tableExist(spark, df, settings)
+        tableHistory(spark, df, settings)
 
     def debugcreateContext(self, paths:tuple, content:dict) -> None:
         
