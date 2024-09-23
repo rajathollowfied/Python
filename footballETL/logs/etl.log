@@ -1,0 +1,6 @@
+INFO:root:Connection successful!
+INFO:root:PostgreSQL version:('PostgreSQL 17rc1 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit',)
+INFO:root:Data loaded into goal_scorers successfully!
+INFO:root:Data loaded into match_results successfully!
+INFO:root:Data loaded into penalty_shootouts successfully!
+INFO:root:Connection closed successfully!
