@@ -1,6 +1,10 @@
-INFO:root:Connection successful!
-INFO:root:PostgreSQL version:('PostgreSQL 17rc1 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit',)
-INFO:root:Data loaded into goal_scorers successfully!
-INFO:root:Data loaded into match_results successfully!
-INFO:root:Data loaded into penalty_shootouts successfully!
-INFO:root:Connection closed successfully!
+2024-09-24 13:45:54,046 - INFO - PostgreSQL version:('PostgreSQL 17rc1 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit',)
+2024-09-24 13:45:54,064 - INFO - table trunc complete Goal_Scorers
+2024-09-24 13:45:54,070 - INFO - table trunc complete Match_Results
+2024-09-24 13:45:54,076 - INFO - table trunc complete Penalty_Shootouts
+2024-09-24 13:46:37,936 - INFO - Connection successful!
+2024-09-24 13:46:37,937 - INFO - PostgreSQL version:('PostgreSQL 17rc1 on x86_64-windows, compiled by msvc-19.41.34120, 64-bit',)
+2024-09-24 13:46:38,493 - INFO - Data loaded into goal_scorers successfully!
+2024-09-24 13:46:39,075 - INFO - Data loaded into match_results successfully!
+2024-09-24 13:46:39,098 - INFO - Data loaded into penalty_shootouts successfully!
+2024-09-24 13:46:39,098 - INFO - Connection closed successfully!

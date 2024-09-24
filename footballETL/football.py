@@ -4,7 +4,7 @@ from io import StringIO
 import json
 import psycopg2
 
-logging.basicConfig(filename='logs\etl.log', level=logging.INFO)
+logging.basicConfig(filename='logs\etl.log', level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
 
 def configLoad():
     with open('D:\Learning\GIT\Python//footballETL\config\dbConfig.json', 'r') as configFile:
@@ -97,8 +97,6 @@ def readCSV_to_pgDB(cursor,connection,table,path,loopValue):
         logging.error(f"Error, rollingback: {e}")
         connection.rollback()
         
-
-
 def main():
     
     cursor, connection = dbConnection()
@@ -108,9 +106,6 @@ def main():
         table = etlConfig['fileInfo'][f'{i}']
         readCSV_to_pgDB(cursor,connection,table,path,i)
         
-        
-    #df = pd.read_csv('D:\Learning\GIT\datasets//football\Penalty_Shootouts.csv',dtype=fileSchemas(2),header=None)
-    #df[6] = df[6].str.replace(r',(?![^"]*")', '', regex=True).str.strip()
     cursor.close()
     connection.close()
     logging.info(f"Connection closed successfully!")
