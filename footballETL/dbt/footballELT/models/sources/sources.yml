@@ -1,0 +1,14 @@
+
+version: 2
+
+sources:
+  - name: public
+    description: "A starter dbt model"
+    schema: public
+    tables:
+      - name: match_results
+        description: "This table contains match results."
+      - name: penalty_shootouts
+        description: "This table contains details about penalty shootouts."
+      - name: goal_scorers
+        description: "This table contains information about goal scorers."
