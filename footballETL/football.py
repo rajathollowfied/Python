@@ -56,7 +56,6 @@ def fileSchemas(fileType):
             'date': str,
             'home_team': str,
             'away_team': str,
-            'team': str,
             'home_score': int,
             'away_score' : int,
             'tournament' : str,
